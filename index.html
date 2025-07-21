@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ashutosh Gupta - Creative Developer Portfolio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+    <!-- Chosen Palette: Arctic & Ink -->
+    <!-- Application Structure Plan: Retaining the single-page narrative, this version introduces a fixed navigation bar for better usability and a more structured layout with distinct sections. The hero section is enhanced with an animated particle background for a high-impact first impression. A new 'About' section personalizes the narrative. The core interactions are evolved: scroll-triggered animations are more refined, and project cards and skills now have hover effects for better feedback. The goal is to create a more immersive, portfolio-like experience. -->
+    <!-- Visualization & Content Choices: 
+        - Particle Background: Goal: Impress/Engage -> Method: particles.js library -> Interaction: Subtle animation follows cursor movement. Justification: Adds a dynamic, tech-forward aesthetic to the hero section.
+        - Key Metrics: Goal: Inform/Impress -> Method: Animated counters -> Interaction: Animate on scroll. Justification: Retained for its proven impact in highlighting key achievements.
+        - Technical Skills: Goal: Organize/Inform -> Method: Combination of a Radar Chart for overview and categorized lists for detail -> Interaction: Hover effects on list items. Justification: Provides both a high-level visual summary and scannable, detailed information.
+        - Project Cards: Goal: Organize/Inform -> Method: Redesigned HTML/CSS cards with icons and hover effects -> Interaction: Card lifts and glows on hover. Justification: Improves visual hierarchy and user feedback.
+        - Custom Cursor: Goal: Engage/Polish -> Method: JS-driven DOM element -> Interaction: Follows the mouse cursor. Justification: Adds a unique, polished feel to the user experience.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400&family=Inter:wght@300;400;600;700&display=swap');
+        
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8f9fa; /* Light background */
+            color: #495057; /* Softer text color */
+            cursor: none;
+        }
+        .font-mono { font-family: 'Fira Code', monospace; }
+        .text-primary { color: #212529; }
+        .text-secondary { color: #495057; }
+        .text-accent { color: #0056b3; } /* New accent color */
+        .bg-primary-light { background-color: #f8f9fa; }
+        .bg-card { background-color: #ffffff; }
+        
+        /* Custom Cursor */
+        .cursor-dot, .cursor-outline {
+            pointer-events: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            border-radius: 50%;
+            z-index: 9999;
+            transition: opacity 0.3s, transform 0.3s;
+        }
+        .cursor-dot { width: 8px; height: 8px; background-color: #0056b3; }
+        .cursor-outline { width: 40px; height: 40px; border: 2px solid #0056b3; }
+        
+        /* Navigation */
+        .nav-link.active { color: #0056b3; }
+        
+        /* Floating Animation for Name */
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+            100% { transform: translateY(0px); }
+        }
+        .floating-name {
+            animation: float 6s ease-in-out infinite;
+        }
+
+        /* Section Animation */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s cubic-bezier(0.645, 0.045, 0.355, 1), transform 0.8s cubic-bezier(0.645, 0.045, 0.355, 1);
+        }
+        .reveal.visible { opacity: 1; transform: translateY(0); }
+        
+        /* Project Card Hover */
+        .project-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05), 0 4px 6px -2px rgba(0,0,0,0.05);
+        }
+        .project-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.15);
+        }
+
+        /* Particles.js Container */
+        #particles-js {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 0;
+        }
+        header { position: relative; z-index: 1; }
+    </style>
+</head>
+<body class="bg-primary-light">
+
+    <div class="cursor-dot"></div>
+    <div class="cursor-outline"></div>
+
+    <!-- Fixed Header -->
+    <div id="main-nav" class="fixed top-0 left-0 w-full bg-primary-light bg-opacity-80 backdrop-blur-sm z-50 transition-transform duration-300 -translate-y-full">
+        <nav class="max-w-6xl mx-auto px-8 py-4 flex justify-between items-center">
+            <a href="#hero" class="text-accent text-2xl font-mono font-bold">AG</a>
+            <div class="hidden md:flex items-center space-x-8 font-mono text-secondary">
+                <a href="#about" class="nav-link hover:text-accent transition-colors">About</a>
+                <a href="#projects" class="nav-link hover:text-accent transition-colors">Projects</a>
+                <a href="#skills" class="nav-link hover:text-accent transition-colors">Skills</a>
+                <a href="#contact" class="nav-link hover:text-accent transition-colors">Contact</a>
+            </div>
+        </nav>
+    </div>
+
+    <div class="max-w-6xl mx-auto px-8">
+        <!-- Hero Section -->
+        <header id="hero" class="min-h-screen flex flex-col justify-center relative">
+            <div id="particles-js"></div>
+            <div class="relative z-10">
+                <p class="text-accent font-mono mb-4 text-lg reveal">Hi, my name is</p>
+                <h1 class="text-5xl md:text-7xl font-bold text-primary mb-4 reveal floating-name" style="transition-delay: 100ms;">Ashutosh Gupta.</h1>
+                <h2 class="text-4xl md:text-6xl font-bold text-secondary mb-8 reveal" style="transition-delay: 200ms;">I craft solutions in code.</h2>
+                <p class="max-w-xl text-secondary mb-12 reveal" style="transition-delay: 300ms;">
+                    I'm a software developer with a passion for building elegant, efficient applications. From optimizing algorithms to architecting cloud solutions, I thrive on turning complex challenges into impactful software.
+                </p>
+                <a href="#projects" class="text-accent border border-accent rounded py-4 px-8 font-mono hover:bg-accent hover:text-white transition-colors duration-300 reveal" style="transition-delay: 400ms;">
+                    View My Work
+                </a>
+            </div>
+        </header>
+
+        <main>
+            <!-- About Section -->
+            <section id="about" class="py-24 flex flex-col md:flex-row items-center gap-12 reveal">
+                <div class="w-full md:w-3/5">
+                    <h2 class="text-3xl font-bold text-primary mb-6 flex items-center">
+                        <span class="text-accent font-mono mr-4">01.</span> About Me
+                    </h2>
+                    <div class="space-y-4 text-secondary">
+                        <p>Hello! I'm Ashutosh, a developer driven by curiosity and a desire to build things that matter. My journey into technology began with a simple "Hello, World!" and has since evolved into a deep appreciation for software architecture, performance optimization, and user-centric design.</p>
+                        <p>I enjoy the process of deconstructing complex problems and reassembling them into clean, functional code. Whether it's designing an algorithm to improve efficiency or deploying a service on AWS, I am committed to delivering high-quality results.</p>
+                        <p>Currently, I'm a student at <span class="text-accent font-semibold">Amity University</span>, pursuing a B.Tech in Computer Science, where I continuously explore new technologies and refine my skills.</p>
+                    </div>
+                </div>
+                <div class="w-full md:w-2/5 flex justify-center">
+                    <div class="w-64 h-64 rounded-md bg-accent relative group">
+                        <div class="absolute w-full h-full border-2 border-accent rounded-md top-4 left-4 group-hover:top-2 group-hover:left-2 transition-all duration-300"></div>
+                        <div class="absolute w-full h-full bg-white rounded-md z-10 flex items-center justify-center">
+                            <span class="text-8xl text-accent font-mono opacity-20">AG</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Projects Section -->
+            <section id="projects" class="py-24 reveal">
+                <h2 class="text-3xl font-bold text-primary mb-12 text-center"><span class="text-accent font-mono mr-4">02.</span>Featured Projects</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="project-card bg-card rounded-lg p-8 flex flex-col">
+                        <h3 class="text-2xl font-bold text-primary mb-4">LUCKNOW Metro App</h3>
+                        <p class="text-secondary mb-6 flex-grow">A feature-rich metro navigation tool with an advanced routing engine, dynamic data, and a QR ticketing system to streamline the commuter experience.</p>
+                        <div class="grid grid-cols-2 gap-4 my-4 text-center">
+                            <div><p class="text-3xl font-bold text-accent counter" data-target="15">0</p><p class="text-xs font-mono text-secondary">Mins Saved / Trip</p></div>
+                            <div><p class="text-3xl font-bold text-accent counter" data-target="30">0</p><p class="text-xs font-mono text-secondary">% Engagement Up</p></div>
+                        </div>
+                        <div class="font-mono text-secondary text-sm mt-4">Java &bull; Dijkstra's &bull; JSON &bull; QR Tech</div>
+                    </div>
+                    <div class="project-card bg-card rounded-lg p-8 flex flex-col">
+                        <h3 class="text-2xl font-bold text-primary mb-4">Automated CloudWatch Reporter</h3>
+                        <p class="text-secondary mb-6 flex-grow">An automated AWS monitoring system that proactively manages incidents, integrates with Slack/email, and prioritizes alarms to enhance operational efficiency.</p>
+                        <div class="grid grid-cols-2 gap-4 my-4 text-center">
+                             <div><p class="text-3xl font-bold text-accent counter" data-target="80">0</p><p class="text-xs font-mono text-secondary">Manual Work Down</p></div>
+                             <div><p class="text-3xl font-bold text-accent">24/7</p><p class="text-xs font-mono text-secondary">Proactive Alerting</p></div>
+                        </div>
+                        <div class="font-mono text-secondary text-sm mt-4">AWS CloudWatch &bull; SNS &bull; APIs &bull; Shell</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Skills Section -->
+            <section id="skills" class="py-24 text-center reveal">
+                <h2 class="text-3xl font-bold text-primary mb-12"><span class="text-accent font-mono mr-4">03.</span>Technical Skills</h2>
+                <div class="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                    <div class="text-left space-y-6">
+                        <div>
+                            <h3 class="text-xl font-semibold text-primary mb-3">Languages & Databases</h3>
+                            <div class="flex flex-wrap gap-3">
+                                <span class="skill-item">Java</span><span class="skill-item">Python</span><span class="skill-item">JavaScript</span><span class="skill-item">C</span><span class="skill-item">SQL</span><span class="skill-item">MySQL</span>
+                            </div>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-semibold text-primary mb-3">Cloud & Tools</h3>
+                            <div class="flex flex-wrap gap-3">
+                                <span class="skill-item">AWS</span><span class="skill-item">Shell Scripting</span><span class="skill-item">Git</span><span class="skill-item">VS Code</span><span class="skill-item">Eclipse</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chart-container h-80 md:h-96">
+                        <canvas id="skillsChart"></canvas>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Contact Section -->
+            <section id="contact" class="py-24 text-center max-w-xl mx-auto reveal">
+                 <h2 class="text-3xl font-bold text-primary mb-4"><span class="text-accent font-mono mr-4">04.</span>Get In Touch</h2>
+                 <p class="text-secondary mb-8">I'm currently open to new opportunities and collaborations. Whether you have a question or just want to say hi, my inbox is always open. I'll do my best to get back to you!</p>
+                 <a href="mailto:ash.gupta113@gmail.com" class="text-accent border border-accent rounded py-4 px-8 font-mono hover:bg-accent hover:text-white transition-colors duration-300">
+                    Say Hello
+                </a>
+            </section>
+        </main>
+    </div>
+    
+    <footer class="text-center py-6">
+        <p class="font-mono text-sm text-secondary">
+            <a href="https://www.linkedin.com/in/ashutoshguptaaz" target="_blank" class="hover:text-accent transition-colors">Designed & Built by Ashutosh Gupta</a>
+        </p>
+    </footer>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // --- Custom Cursor ---
+            const cursorDot = document.querySelector(".cursor-dot");
+            const cursorOutline = document.querySelector(".cursor-outline");
+            window.addEventListener("mousemove", function (e) {
+                const posX = e.clientX;
+                const posY = e.clientY;
+                cursorDot.style.left = `${posX}px`;
+                cursorDot.style.top = `${posY}px`;
+                cursorOutline.animate({
+                    left: `${posX}px`,
+                    top: `${posY}px`
+                }, { duration: 500, fill: "forwards" });
+            });
+
+            // --- Nav Bar Logic ---
+            const nav = document.getElementById('main-nav');
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 100) {
+                    nav.classList.remove('-translate-y-full');
+                } else {
+                    nav.classList.add('-translate-y-full');
+                }
+            });
+            
+            // --- Intersection Observer for animations ---
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, { threshold: 0.1 });
+            document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+            const counterObserver = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const counter = entry.target;
+                        const target = +counter.getAttribute('data-target');
+                        let count = 0;
+                        const speed = 150; 
+                        const updateCount = () => {
+                            const increment = target / speed;
+                            count += increment;
+                            if (count < target) {
+                                counter.innerText = Math.ceil(count);
+                                requestAnimationFrame(updateCount);
+                            } else {
+                                counter.innerText = target;
+                            }
+                        };
+                        updateCount();
+                        observer.unobserve(counter);
+                    }
+                });
+            }, { threshold: 0.8 });
+            document.querySelectorAll('.counter').forEach(counter => counterObserver.observe(counter));
+
+            // --- Chart.js Radar Chart ---
+            const ctx = document.getElementById('skillsChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: ['Java', 'Problem Solving', 'AWS', 'Databases', 'Python', 'JavaScript'],
+                    datasets: [{
+                        label: 'Proficiency',
+                        data: [90, 95, 80, 85, 75, 70],
+                        backgroundColor: 'rgba(0, 86, 179, 0.2)',
+                        borderColor: '#0056b3',
+                        pointBackgroundColor: '#0056b3',
+                    }]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        r: {
+                            angleLines: { color: 'rgba(0, 0, 0, 0.1)' },
+                            grid: { color: 'rgba(0, 0, 0, 0.1)' },
+                            pointLabels: { font: { size: 12, family: "'Fira Code', monospace" }, color: '#495057' },
+                            ticks: { display: false, stepSize: 20 },
+                            min: 0, max: 100
+                        }
+                    }
+                }
+            });
+
+            // --- Particles.js ---
+            particlesJS("particles-js", {
+                "particles": {
+                    "number": {"value": 80, "density": {"enable": true, "value_area": 800}},
+                    "color": {"value": "#cccccc"},
+                    "shape": {"type": "circle"},
+                    "opacity": {"value": 0.5, "random": true},
+                    "size": {"value": 2, "random": true},
+                    "line_linked": {"enable": true, "distance": 150, "color": "#dddddd", "opacity": 0.4, "width": 1},
+                    "move": {"enable": true, "speed": 2, "direction": "none", "random": false, "straight": false, "out_mode": "out", "bounce": false}
+                },
+                "interactivity": {
+                    "detect_on": "canvas",
+                    "events": {"onhover": {"enable": true, "mode": "grab"}, "onclick": {"enable": true, "mode": "push"}, "resize": true},
+                    "modes": {"grab": {"distance": 140, "line_linked": {"opacity": 1}},"push": {"particles_nb": 4}}
+                },
+                "retina_detect": true
+            });
+        });
+    </script>
+</body>
+</html>
